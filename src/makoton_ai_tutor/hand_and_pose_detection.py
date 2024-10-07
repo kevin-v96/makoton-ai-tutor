@@ -1,5 +1,7 @@
 import cv2
 import mediapipe as mp
+import torch
+from transformers import ViTFeatureExtractor, ViTForImageClassification
 
 # Initialize MediaPipe Hands and Pose
 mp_hands = mp.solutions.hands
@@ -7,6 +9,10 @@ mp_pose = mp.solutions.pose
 hands = mp_hands.Hands(static_image_mode=False, max_num_hands=2, min_detection_confidence=0.5)
 pose = mp_pose.Pose(static_image_mode=False, min_detection_confidence=0.5)
 mp_drawing = mp.solutions.drawing_utils
+
+# Initialize the ViT model and feature extractor
+feature_extractor = ViTFeatureExtractor.from_pretrained("google/vit-base-patch16-224")
+model = ViTForImageClassification.from_pretrained("google/vit-base-patch16-224")
 
 # Function to process frame and detect hand and body landmarks
 def process_frame(frame):
@@ -19,52 +25,52 @@ def process_frame(frame):
     # Process the frame and find body pose landmarks
     pose_results = pose.process(rgb_frame)
     
+    # Create a copy of the frame to draw landmarks on
+    landmark_frame = frame.copy()
+    
     if hand_results.multi_hand_landmarks:
         for hand_landmarks in hand_results.multi_hand_landmarks:
-            # Draw the hand landmarks
-            mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
-            
-            # Extract hand landmark coordinates
-            hand_landmarks_list = []
-            for lm in hand_landmarks.landmark:
-                h, w, _ = frame.shape
-                cx, cy = int(lm.x * w), int(lm.y * h)
-                hand_landmarks_list.append((cx, cy))
-            
-            # Here you would add your Makoton sign classification logic
-            # classify_makoton_sign(hand_landmarks_list)
+            # Draw the hand landmarks on the landmark_frame
+            mp_drawing.draw_landmarks(landmark_frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
     
     if pose_results.pose_landmarks:
-        # Draw the pose landmarks
-        mp_drawing.draw_landmarks(frame, pose_results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
-        
-        # Extract body pose landmark coordinates
-        pose_landmarks_list = []
-        for lm in pose_results.pose_landmarks.landmark:
-            h, w, _ = frame.shape
-            cx, cy = int(lm.x * w), int(lm.y * h)
-            pose_landmarks_list.append((cx, cy))
-        
-        # Here you can add logic to use the body pose landmarks
-        # process_body_pose(pose_landmarks_list)
+        # Draw the pose landmarks on the landmark_frame
+        mp_drawing.draw_landmarks(landmark_frame, pose_results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
     
-    return frame
+    # Prepare the landmark_frame for the ViT model
+    landmark_frame_rgb = cv2.cvtColor(landmark_frame, cv2.COLOR_BGR2RGB)
+    inputs = feature_extractor(images=landmark_frame_rgb, return_tensors="pt")
+    
+    # Run inference
+    with torch.no_grad():
+        outputs = model(**inputs)
+    
+    # Get the predicted class
+    predicted_class = outputs.logits.argmax(-1).item()
+    predicted_label = model.config.id2label[predicted_class]
+    
+    # Display the predicted label on the frame
+    cv2.putText(frame, f"Predicted: {predicted_label}", (10, 30), 
+                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+    
+    return frame, predicted_label
 
-# Main loop for video capture
-cap = cv2.VideoCapture(1)
-while cap.isOpened():
-    success, frame = cap.read()
-    if not success:
-        break
-    
-    # Process the frame
-    processed_frame = process_frame(frame)
-    
-    # Display the frame
-    cv2.imshow('MediaPipe Hands and Pose', processed_frame)
-    
-    if cv2.waitKey(5) & 0xFF == 27:  # Press 'ESC' to exit
-        break
+# Function to process video frames and return results
+def process_video(callback):
+    cap = cv2.VideoCapture(1)
+    while cap.isOpened():
+        success, frame = cap.read()
+        if not success:
+            break
+        
+        # Process the frame
+        processed_frame, predicted_label = process_frame(frame)
+        
+        # Pass the processed frame and label to the callback function
+        callback(processed_frame, predicted_label)
+        
+        if cv2.waitKey(5) & 0xFF == 27:  # Press 'ESC' to exit
+            break
 
-cap.release()
-cv2.destroyAllWindows()
+    cap.release()
+    cv2.destroyAllWindows()
