@@ -52,20 +52,11 @@ const Help = () => {
     </div>
   );
 
-  const renderAIHelp = () => (
-    <div className="ai-help mt-4">
-      <h4 className="font-bold">AI Assistance</h4>
-      <p>Here is some AI-powered assistance.</p>
-      {/* Add your AI interaction logic here */}
-    </div>
-  );
-
   return (
     <div className="flex flex-col items-center mt-10">
       <button className="common-button" onClick={toggleHelpMenu}>Help</button>
       {isOpen && renderHelpOptions()}
       {helpOption === 'GIFs' && renderGifHelp()}
-      {helpOption === 'AI' && renderAIHelp()}
     </div>
   );
 };
