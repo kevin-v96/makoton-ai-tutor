@@ -12,6 +12,8 @@ dependencies = [
     "ipywidgets>=8.1.5",
     "torch>=2.4.1",
     "datasets>=3.0.1",
+    "mediapipe>=0.10.15",
+    "opencv-python>=4.10.0.84",
 ]
 
 [build-system]

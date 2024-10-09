@@ -163,4 +163,4 @@ cython_debug/
 *.mp4
 .DS_Store
 *.lock
-
+node_modules/
