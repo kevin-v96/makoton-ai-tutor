@@ -1,10 +1,9 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { FaVideo, FaVideoSlash } from 'react-icons/fa'; // Import video and stop icons
 
 const WebcamStream = () => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
-  const [isStreaming, setIsStreaming] = useState(false); // Toggle between streaming states
+  const [isStreaming, setIsStreaming] = useState(false);
   const socket = useRef(null);
 
   useEffect(() => {
@@ -23,20 +22,10 @@ const WebcamStream = () => {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       videoRef.current.srcObject = stream;
       videoRef.current.play();
-      setIsStreaming(true); // Webcam is now streaming
+      setIsStreaming(true);
       captureFrames();
     } catch (error) {
       console.error("Error accessing webcam:", error);
-    }
-  };
-
-  const stopWebcam = () => {
-    const stream = videoRef.current.srcObject;
-    const tracks = stream?.getTracks();
-    if (tracks) {
-      tracks.forEach(track => track.stop()); // Stop each track of the stream
-      videoRef.current.srcObject = null; // Clear the video source
-      setIsStreaming(false); // Webcam is no longer streaming
     }
   };
 
@@ -63,23 +52,14 @@ const WebcamStream = () => {
   };
 
   return (
-    <div className="flex flex-col items-center">
-      <button 
-        onClick={isStreaming ? stopWebcam : startWebcam} // Toggle between starting and stopping webcam
-        className="mb-4 p-2 bg-gray-100 text-black rounded hover:bg-gray-200"
-      >
-        {isStreaming ? (
-          <FaVideoSlash className="inline-block text-black" /> // Show stop icon when streaming
-        ) : (
-          <FaVideo className="inline-block text-black" /> // Show start icon when not streaming
-        )}
-        {isStreaming ? ' Stop Webcam' : ' Start Webcam'} {/* Toggle button label */}
-      </button>
-      <video ref={videoRef} width="320" height="240" className="border rounded" />
+    <div>
+      <button onClick={startWebcam}>Start Webcam</button>
+      <video ref={videoRef} width="320" height="240" />
       <canvas ref={canvasRef} style={{ display: 'none' }} />
     </div>
   );
 };
 
 export default WebcamStream;
+
 
