@@ -78,10 +78,11 @@ const Learn = () => {
                         <h2 className="text-2xl font-bold mb-4">User & AI Interface</h2>
 
                         {/* Language dropdown and speech recognition button */}
-                        <div className="language-and-speech flex items-center mb-4">
+                        <div className="flex items-center justify-center mb-4 space-x-4">
                             <LanguageDropdown 
                                 selectedLanguage={selectedLanguage} 
                                 onLanguageChange={handleLanguageChange} 
+                                className="w-1/3" // Adjust the width as needed
                             />
                             {/* VoiceToVoiceButton replaces the TextToSpeechButton */}
                             <VoiceToVoiceButton

@@ -29,7 +29,7 @@ const Learn = () => {
         debounceTimer.current = setTimeout(() => {
             setUserInput(value);
             setIsVoiceInput(false); // Set to false because it's from text input
-        }, 100); // Wait for 500ms pause in typing
+        }, 500); // Wait for 500ms pause in typing
     };
 
     // Handle speech input (from VoiceToVoiceButton)
@@ -120,7 +120,7 @@ const Learn = () => {
                     </div>
                 </div>
                 <div className="right-section bg-color-2"></div>
-            </div>
+            </div
         </div>
     );
 };

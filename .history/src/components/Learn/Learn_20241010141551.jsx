@@ -5,9 +5,9 @@ import colorOptions from '../Choices/Colors/Colors';
 import LanguageDropdown from '../Languagedropdown/Language';
 import UserAiResponse from '../UserAiResponse/UserAiResponse';
 import VoiceToVoiceButton from '../VoiceToVoice/VoiceToVoiceButton';
+import TextToSpeech from '../TextToSpeech/TextToSpeech'; // Import TextToSpeech component
 
-// Lazy load components to optimize performance
-const TextToSpeech = React.lazy(() => import('../TextToSpeech/TextToSpeech')); // Lazy load TextToSpeech
+// Lazy load Webcam and Help components to optimize performance
 const Webcam = React.lazy(() => import('./Webcam/Webcam'));
 const Help = React.lazy(() => import('./Help/Help'));
 
@@ -29,7 +29,7 @@ const Learn = () => {
         debounceTimer.current = setTimeout(() => {
             setUserInput(value);
             setIsVoiceInput(false); // Set to false because it's from text input
-        }, 100); // Wait for 500ms pause in typing
+        }, 500); // Wait for 500ms pause in typing
     };
 
     // Handle speech input (from VoiceToVoiceButton)
@@ -111,12 +111,8 @@ const Learn = () => {
                             </div>
                         )}
 
-                        {/* Lazy load Text-to-Speech for AI response */}
-                        {aiResponse && (
-                            <Suspense fallback={<div>Loading AI Response...</div>}>
-                                <TextToSpeech text={aiResponse} selectedLanguage={selectedLanguage} />
-                            </Suspense>
-                        )}
+                        {/* Text-to-Speech for AI response */}
+                        {aiResponse && <TextToSpeech text={aiResponse} selectedLanguage={selectedLanguage} />}
                     </div>
                 </div>
                 <div className="right-section bg-color-2"></div>
@@ -126,7 +122,6 @@ const Learn = () => {
 };
 
 export default Learn;
-
 
 
 

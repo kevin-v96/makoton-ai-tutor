@@ -14,7 +14,7 @@ const LanguageDropdown = ({ selectedLanguage, onLanguageChange, languages }) => 
   const availableLanguages = languages || defaultLanguages; // Use passed languages or default
 
   return (
-    <div className="language-dropdown mb-4 mt-5">
+    <div className="language-dropdown mb-4">
       <label htmlFor="languageSelect" className="font-bold mr-2">
         Select Language:
       </label>

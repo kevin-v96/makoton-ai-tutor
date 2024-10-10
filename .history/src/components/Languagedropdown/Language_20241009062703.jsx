@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-const LanguageDropdown = ({ selectedLanguage, onLanguageChange, languages }) => {
-  // Default language options in case languages aren't passed as props
-  const defaultLanguages = [
+const Language = () => {
+  const [selectedLanguage, setSelectedLanguage] = useState('en'); // Default to English
+
+  // Define the available languages
+  const languages = [
     { code: 'en', label: 'English' },
     { code: 'es', label: 'Spanish' },
     { code: 'fr', label: 'French' },
@@ -11,21 +13,24 @@ const LanguageDropdown = ({ selectedLanguage, onLanguageChange, languages }) => 
     // Add more languages as needed
   ];
 
-  const availableLanguages = languages || defaultLanguages; // Use passed languages or default
+  // Handle language selection
+  const handleLanguageChange = (event) => {
+    setSelectedLanguage(event.target.value);
+    // Here you can also integrate the selected language with your text-to-speech functionality
+  };
 
   return (
-    <div className="language-dropdown mb-4 mt-5">
+    <div className="language-dropdown">
       <label htmlFor="languageSelect" className="font-bold mr-2">
         Select Language:
       </label>
       <select
         id="languageSelect"
-        aria-label="Select language"
         value={selectedLanguage}
-        onChange={onLanguageChange} // Pass the handler from the parent
+        onChange={handleLanguageChange}
         className="border border-gray-300 rounded p-2"
       >
-        {availableLanguages.map((lang) => (
+        {languages.map((lang) => (
           <option key={lang.code} value={lang.code}>
             {lang.label}
           </option>
@@ -35,4 +40,4 @@ const LanguageDropdown = ({ selectedLanguage, onLanguageChange, languages }) => 
   );
 };
 
-export default LanguageDropdown;
+export default Language;

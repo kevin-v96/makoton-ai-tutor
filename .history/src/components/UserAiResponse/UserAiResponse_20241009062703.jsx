@@ -4,6 +4,8 @@ const UserAiResponse = ({ aiResponse, userInput, onInputChange, onSubmit }) => {
     return (
         <div className="flex flex-col">
             <div className="ai-response mb-4">
+                {/* Remove or comment out the label */}
+                {/* <h3 className="font-bold">AI Response:</h3> */}
                 <p>{aiResponse}</p>
             </div>
             <textarea
@@ -17,6 +19,6 @@ const UserAiResponse = ({ aiResponse, userInput, onInputChange, onSubmit }) => {
             </button>
         </div>
     );
-};
+}
 
 export default UserAiResponse;

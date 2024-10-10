@@ -1,15 +1,13 @@
-import React, { useState, useRef, Suspense } from 'react';
+import React, { useState } from 'react';
 import './learn.css'; 
 import Navbar from '../LandingPage/Navbar';
+import Webcam from './Webcam/Webcam';
 import colorOptions from '../Choices/Colors/Colors'; 
+import Help from './Help/Help';
 import LanguageDropdown from '../Languagedropdown/Language';
 import UserAiResponse from '../UserAiResponse/UserAiResponse';
 import VoiceToVoiceButton from '../VoiceToVoice/VoiceToVoiceButton';
-
-// Lazy load components to optimize performance
-const TextToSpeech = React.lazy(() => import('../TextToSpeech/TextToSpeech')); // Lazy load TextToSpeech
-const Webcam = React.lazy(() => import('./Webcam/Webcam'));
-const Help = React.lazy(() => import('./Help/Help'));
+import TextToSpeech from '../TextToSpeech/TextToSpeech';  // Import TextToSpeech component
 
 const Learn = () => {
     const [userInput, setUserInput] = useState(''); // User's typed input or speech transcription
@@ -19,23 +17,17 @@ const Learn = () => {
     const [aiResponse, setAiResponse] = useState('What do you want to learn today?');
     const [step, setStep] = useState(0);
     const [isVoiceInput, setIsVoiceInput] = useState(false); // Track if the input is from voice or text
-    const debounceTimer = useRef(null); // Debounce timer to handle input
 
-    // Handle text input change from user with debounce
+    // Handle text input change from user
     const handleInputChange = (event) => {
-        const value = event.target.value.toLowerCase().trim();
-        clearTimeout(debounceTimer.current); // Clear previous debounce if user keeps typing
-
-        debounceTimer.current = setTimeout(() => {
-            setUserInput(value);
-            setIsVoiceInput(false); // Set to false because it's from text input
-        }, 100); // Wait for 500ms pause in typing
+        setUserInput(event.target.value.toLowerCase().trim());
+        setIsVoiceInput(false);  // Set to false because it's from text input
     };
 
     // Handle speech input (from VoiceToVoiceButton)
     const handleSpeechInput = (transcript) => {
         setUserInput(transcript.toLowerCase().trim());
-        setIsVoiceInput(true); // Set to true because it's from voice input
+        setIsVoiceInput(true);  // Set to true because it's from voice input
     };
 
     // Handle language change for dropdown
@@ -45,7 +37,7 @@ const Learn = () => {
     const handleSubmit = () => {
         const colorData = colorOptions[userInput];
         if (!userInput) return setAiResponse("Please enter a color or a question.");
-
+        
         if (step === 0 && userInput.includes('color')) {
             setAiResponse('Great! Which color do you want to learn?');
             setStep(1);
@@ -69,15 +61,12 @@ const Learn = () => {
                 <div className="center-section flex flex-col items-center justify-center">
                     <h1 className="text-blue-900 text-3xl font-bold text-center mb-6">MakaTalk</h1>
                     
-                    {/* Lazy load Webcam component */}
-                    <Suspense fallback={<div>Loading Webcam...</div>}>
-                        <Webcam />
-                    </Suspense>
+                    <Webcam />
 
                     <div className="interface-card">
                         <h2 className="text-2xl font-bold mb-4">User & AI Interface</h2>
 
-                        {/* Language dropdown and speech recognition button */}
+                        {/* Language dropdown and speech recognition button */} 
                         <div className="language-and-speech flex items-center mb-4">
                             <LanguageDropdown 
                                 selectedLanguage={selectedLanguage} 
@@ -98,10 +87,7 @@ const Learn = () => {
                             onSubmit={handleSubmit}
                         />
 
-                        {/* Lazy load Help component */}
-                        <Suspense fallback={<div>Loading Help...</div>}>
-                            <Help setUserInput={setUserInput} />
-                        </Suspense>
+                        <Help setUserInput={setUserInput} />
 
                         {/* Show image and instructions if available */}
                         {selectedImage && (
@@ -111,12 +97,8 @@ const Learn = () => {
                             </div>
                         )}
 
-                        {/* Lazy load Text-to-Speech for AI response */}
-                        {aiResponse && (
-                            <Suspense fallback={<div>Loading AI Response...</div>}>
-                                <TextToSpeech text={aiResponse} selectedLanguage={selectedLanguage} />
-                            </Suspense>
-                        )}
+                        {/* Text-to-Speech for AI response */}
+                        <TextToSpeech text={aiResponse} selectedLanguage={selectedLanguage} />
                     </div>
                 </div>
                 <div className="right-section bg-color-2"></div>
